@@ -7,34 +7,45 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
 
 @Entity()
+@ObjectType()
 export class Membership {
   @PrimaryGeneratedColumn('uuid')
+  @Field()
   id: string;
 
   @Column('text', { unique: true })
+  @Field()
   name: string;
 
   @Column({ type: 'numeric', precision: 10, scale: 2, default: 0 })
+  @Field(() => Float)
   cost: number;
 
   @Column('boolean')
+  @Field()
   status?: boolean;
 
   @Column('int')
+  @Field(() => Int)
   max_classes_assistance: number;
 
   @Column('int')
+  @Field(() => Int)
   max_gym_assistance: number;
 
   @Column('int')
+  @Field(() => Int)
   duration_months: number;
 
   @CreateDateColumn()
+  @Field()
   created_at: Date;
 
   @UpdateDateColumn()
+  @Field()
   updated_at: Date;
 
   @ManyToMany('Subscription', { eager: false })

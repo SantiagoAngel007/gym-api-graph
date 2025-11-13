@@ -2,6 +2,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MembershipsService } from './memberships.service';
 import { MembershipsController } from './memberships.controller';
+import { MembershipsResolver } from './memberships.resolver';
 import { Membership } from './entities/membership.entity';
 import { AuthModule } from '../auth/auth.module';
 
@@ -11,7 +12,7 @@ import { AuthModule } from '../auth/auth.module';
     forwardRef(() => AuthModule),
   ],
   controllers: [MembershipsController],
-  providers: [MembershipsService],
+  providers: [MembershipsService, MembershipsResolver],
   exports: [MembershipsService, TypeOrmModule],
 })
 export class MembershipsModule {}

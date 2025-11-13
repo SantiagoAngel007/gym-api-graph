@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { InputType, Field, Int, Float } from '@nestjs/graphql';
 import {
   IsString,
   IsNotEmpty,
@@ -10,58 +10,40 @@ import {
   IsIn,
 } from 'class-validator';
 
-export class CreateMembershipDto {
-  @ApiProperty({
-    description: 'The name of the membership plan',
-    example: 'Gold Plan',
-  })
+@InputType()
+export class CreateMembershipInput {
+  @Field()
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({
-    description: 'The cost of the membership',
-    example: 99.99,
-  })
+  @Field(() => Float)
   @IsNumber()
   @Min(0)
   cost: number;
 
-  @ApiProperty({
-    description:
-      'The maximum number of classes a member can attend with this plan',
-    example: 10,
-  })
+  @Field(() => Int)
   @IsInt()
   @Min(0)
   max_classes_assistance: number;
 
-  @ApiProperty({
-    description: 'The maximum number of general gym visits allowed',
-    example: 20,
-  })
+  @Field(() => Int)
   @IsInt()
   @Min(0)
   max_gym_assistance: number;
 
-  @ApiProperty({
-    description:
-      'The duration of the membership in months. Must be 1 (monthly) or 12 (yearly).',
-    example: 1,
-  })
+  @Field(() => Int)
   @IsInt()
   @IsIn([1, 12], {
     message: 'La duración debe ser 1 mes (mensual) o 12 meses (anual)',
   })
   duration_months: number;
 
-  @ApiProperty({
-    description: 'The initial status of the membership (active/inactive)',
-    example: true,
-    required: false, // Marks this property as optional in Swagger UI
-    default: true,
-  })
+  @Field({ nullable: true })
   @IsBoolean()
   @IsOptional()
   status?: boolean;
 }
+
+// Keep the DTO for backwards compatibility if needed
+export class CreateMembershipDto extends CreateMembershipInput {}

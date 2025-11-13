@@ -1,6 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { AuthResolver } from './auth.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/users.entity';
 import { Role } from './entities/roles.entity';
@@ -26,7 +27,7 @@ import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
     }),
     forwardRef(() => SubscriptionsModule),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, AuthResolver],
   exports: [AuthService, JwtModule, TypeOrmModule, PassportModule, JwtStrategy],
 })
 export class AuthModule {}

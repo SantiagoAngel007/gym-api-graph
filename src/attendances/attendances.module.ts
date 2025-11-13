@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AttendancesService } from './attendances.service';
 import { AttendancesController } from './attendances.controller';
+import { AttendancesResolver } from './attendances.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Attendance } from './entities/attendance.entity';
 import { User } from 'src/auth/entities/users.entity';
@@ -13,6 +14,6 @@ import { AuthModule } from 'src/auth/auth.module';
     AuthModule,
   ],
   controllers: [AttendancesController],
-  providers: [AttendancesService],
+  providers: [AttendancesService, AttendancesResolver],
 })
 export class AttendancesModule {}

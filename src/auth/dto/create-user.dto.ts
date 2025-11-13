@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { InputType, Field, Int } from '@nestjs/graphql';
 import {
   IsEmail,
   IsInt,
@@ -10,41 +10,30 @@ import {
   MaxLength,
 } from 'class-validator';
 
-export class CreateUserDto {
-  @ApiProperty({
-    description: "The user's unique email address",
-    example: 'john.doe@example.com',
-  })
+@InputType()
+export class CreateUserInput {
+  @Field()
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({
-    description: 'The full name of the user',
-    example: 'John Doe',
-  })
+  @Field()
   @IsString()
   @IsNotEmpty()
   fullName: string;
 
-  @ApiProperty({
-    description: 'The age of the user',
-    example: 25,
-  })
+  @Field(() => Int)
   @IsInt()
   @Min(1)
   @Max(120)
   age: number;
 
-  @ApiProperty({
-    description:
-      "The user's password. Must be between 6 and 50 characters long.",
-    example: 'Password123',
-    minLength: 6,
-    maxLength: 50,
-  })
+  @Field()
   @IsString()
   @MinLength(6)
   @MaxLength(50)
   password: string;
 }
+
+// Keep the DTO for backwards compatibility if needed
+export class CreateUserDto extends CreateUserInput {}
