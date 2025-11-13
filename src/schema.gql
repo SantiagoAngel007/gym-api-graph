@@ -1,0 +1,145 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Membership {
+  id: String!
+  name: String!
+  cost: Float!
+  status: Boolean!
+  max_classes_assistance: Int!
+  max_gym_assistance: Int!
+  duration_months: Int!
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type User {
+  id: String!
+  email: String!
+  fullName: String!
+  age: Int!
+  isActive: Boolean!
+}
+
+type Subscription {
+  id: String!
+  name: String!
+  cost: Float!
+  max_classes_assistance: Int!
+  max_gym_assistance: Int!
+  duration_months: Int!
+  purchase_date: DateTime!
+  isActive: Boolean!
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type AuthResponse {
+  token: String!
+  user: User!
+}
+
+type Attendance {
+  id: String!
+  type: AttendanceType!
+  entranceDatetime: DateTime!
+  exitDatetime: DateTime
+  isActive: Boolean!
+  dateKey: String!
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+enum AttendanceType {
+  GYM
+  CLASS
+}
+
+type AttendanceStatusResponse {
+  isInside: Boolean!
+  currentAttendance: Attendance
+  availableAttendances: String!
+}
+
+type Query {
+  memberships: [Membership!]!
+  membership(id: String!): Membership!
+  me(id: String!): User!
+  subscriptionByUserId(userId: String!): Subscription!
+  subscription(id: String!): Subscription!
+  subscriptions: [Subscription!]!
+  attendanceStatus(userId: String!): AttendanceStatusResponse!
+}
+
+type Mutation {
+  createMembership(createMembershipInput: CreateMembershipInput!): Membership!
+  updateMembership(updateMembershipInput: UpdateMembershipInput!): Membership!
+  toggleMembershipStatus(id: String!): Membership!
+  removeMembership(id: String!): Boolean!
+  signup(createUserInput: CreateUserInput!): AuthResponse!
+  login(loginInput: LoginInput!): AuthResponse!
+  createSubscriptionForUser(userId: String!): Subscription!
+  updateSubscription(updateSubscriptionInput: UpdateSubscriptionInput!): Subscription!
+  deactivateSubscription(id: String!): Subscription!
+  activateSubscription(id: String!): Subscription!
+  removeSubscription(id: String!): Boolean!
+  checkIn(createAttendanceInput: CreateAttendanceInput!): Attendance!
+  checkOut(userId: String!): Attendance!
+}
+
+input CreateMembershipInput {
+  name: String!
+  cost: Float!
+  max_classes_assistance: Int!
+  max_gym_assistance: Int!
+  duration_months: Int!
+  status: Boolean
+}
+
+input UpdateMembershipInput {
+  id: String!
+  name: String
+  cost: Float
+  max_classes_assistance: Int
+  max_gym_assistance: Int
+  duration_months: Int
+  status: Boolean
+}
+
+input CreateUserInput {
+  email: String!
+  fullName: String!
+  age: Int!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input UpdateSubscriptionInput {
+  id: String!
+  name: String
+  cost: Float
+  max_classes_assistance: Int
+  max_gym_assistance: Int
+  duration_months: Int
+  purchase_date: DateTime
+  membershipIds: [String!]
+  isActive: Boolean
+}
+
+input CreateAttendanceInput {
+  userId: String!
+  entranceDatetime: String!
+  exitDatetime: String
+  type: AttendanceType!
+  dateKey: String!
+}

@@ -9,12 +9,12 @@ export class UpdateAttendanceInput {
   @Field({ nullable: true })
   @IsOptional()
   @IsDateString()
-  readonly exitDatetime?: string;
+  exitDatetime?: string;
 
   @Field({ nullable: true })
   @IsOptional()
   @IsBoolean()
-  readonly isActive?: boolean;
+  isActive?: boolean;
 }
 
 // Keep the DTO for backwards compatibility if needed

@@ -1,43 +1,39 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ObjectType, Field } from '@nestjs/graphql';
 import { AttendancesService } from './attendances.service';
 import { Attendance } from './entities/attendance.entity';
 import { CreateAttendanceInput } from './dto/create-attendance.dto';
 import { UpdateAttendanceInput } from './dto/update-attendance.dto';
 
+@ObjectType()
+export class AttendanceStatusResponse {
+  @Field()
+  isInside: boolean;
+
+  @Field(() => Attendance, { nullable: true })
+  currentAttendance?: Attendance;
+
+  @Field()
+  availableAttendances: string;
+}
+
 @Resolver('Attendance')
 export class AttendancesResolver {
   constructor(private readonly attendancesService: AttendancesService) {}
 
-  @Query(() => [Attendance])
-  async attendances(@Args('userId') userId: string) {
-    return this.attendancesService.getUserAttendances(userId);
-  }
-
-  @Query(() => Attendance)
-  async attendance(@Args('id') id: string) {
-    return this.attendancesService.findAttendanceById(id);
+  @Query(() => AttendanceStatusResponse)
+  async attendanceStatus(@Args('userId') userId: string) {
+    return this.attendancesService.getUserAttendanceStatus(userId);
   }
 
   @Mutation(() => Attendance)
-  async createAttendance(
+  async checkIn(
     @Args('createAttendanceInput') createAttendanceInput: CreateAttendanceInput,
   ) {
-    return this.attendancesService.createAttendance(createAttendanceInput);
+    return this.attendancesService.checkIn(createAttendanceInput);
   }
 
   @Mutation(() => Attendance)
-  async updateAttendance(
-    @Args('updateAttendanceInput') updateAttendanceInput: UpdateAttendanceInput,
-  ) {
-    return this.attendancesService.updateAttendance(
-      updateAttendanceInput.id,
-      updateAttendanceInput,
-    );
-  }
-
-  @Mutation(() => Boolean)
-  async removeAttendance(@Args('id') id: string) {
-    await this.attendancesService.removeAttendance(id);
-    return true;
+  async checkOut(@Args('userId') userId: string) {
+    return this.attendancesService.checkOut(userId);
   }
 }

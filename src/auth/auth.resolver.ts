@@ -8,7 +8,7 @@ import { ObjectType, Field } from '@nestjs/graphql';
 @ObjectType()
 export class AuthResponse {
   @Field()
-  access_token: string;
+  token: string;
 
   @Field(() => User)
   user: User;
@@ -20,26 +20,24 @@ export class AuthResolver {
 
   @Mutation(() => AuthResponse)
   async signup(@Args('createUserInput') createUserInput: CreateUserInput) {
-    const user = await this.authService.create(createUserInput);
-    const access_token = await this.authService.getJwtToken({ id: user.id });
+    const result = await this.authService.create(createUserInput);
     return {
-      access_token,
-      user,
+      token: result.token,
+      user: result,
     };
   }
 
   @Mutation(() => AuthResponse)
   async login(@Args('loginInput') loginInput: LoginInput) {
-    const user = await this.authService.login(loginInput);
-    const access_token = await this.authService.getJwtToken({ id: user.id });
+    const result = await this.authService.login(loginInput);
     return {
-      access_token,
-      user,
+      token: result.token,
+      user: result,
     };
   }
 
   @Query(() => User)
-  async me(@Args('token') token: string) {
-    return this.authService.validateUserByToken(token);
+  async me(@Args('id') id: string) {
+    return this.authService.findOne(id);
   }
 }

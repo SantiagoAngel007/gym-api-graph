@@ -1,41 +1,41 @@
 version: '3.8'
 
 services:
-  postgres:
+  postgres-gym:
     image: postgres:15-alpine
-    container_name: gym-api-db
+    container_name: gym-api-graphql-db
     environment:
       POSTGRES_USER: ${DB_USERNAME:-gymuser}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-gympass123}
-      POSTGRES_DB: ${DB_NAME:-gym_api}
+      POSTGRES_DB: ${DB_NAME:-gym_api_graphql}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_gym_data:/var/lib/postgresql/data
     networks:
-      - gym-network
+      - gym-graphql-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-gymuser}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  pgadmin:
+  pgadmin-gym:
     image: dpage/pgadmin4:latest
-    container_name: gym-api-pgadmin
+    container_name: gym-api-graphql-pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "5050:80"
+      - "5051:80"
     depends_on:
-      - postgres
+      - postgres-gym
     networks:
-      - gym-network
+      - gym-graphql-network
 
 volumes:
-  postgres_data:
+  postgres_gym_data:
 
 networks:
-  gym-network:
+  gym-graphql-network:
     driver: bridge

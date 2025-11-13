@@ -1,8 +1,8 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { MembershipsService } from './memberships.service';
 import { Membership } from './entities/membership.entity';
-import { CreateMembershipInput } from './dto/create-membership.dto';
-import { UpdateMembershipInput } from './dto/update-membership.dto';
+import { CreateMembershipInput, CreateMembershipDto } from './dto/create-membership.dto';
+import { UpdateMembershipInput, UpdateMembershipDto } from './dto/update-membership.dto';
 
 @Resolver('Membership')
 export class MembershipsResolver {
@@ -22,16 +22,20 @@ export class MembershipsResolver {
   async createMembership(
     @Args('createMembershipInput') createMembershipInput: CreateMembershipInput,
   ) {
-    return this.membershipsService.createNewMembership(createMembershipInput);
+    const dto = new CreateMembershipDto();
+    Object.assign(dto, createMembershipInput);
+    return this.membershipsService.createNewMembership(dto);
   }
 
   @Mutation(() => Membership)
   async updateMembership(
     @Args('updateMembershipInput') updateMembershipInput: UpdateMembershipInput,
   ) {
+    const dto = new UpdateMembershipDto();
+    Object.assign(dto, updateMembershipInput);
     return this.membershipsService.updateExistingMembership(
       updateMembershipInput.id,
-      updateMembershipInput,
+      dto,
     );
   }
 
