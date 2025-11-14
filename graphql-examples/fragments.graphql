@@ -1,0 +1,164 @@
+# ========================================
+# GRAPHQL FRAGMENTS - Gym API
+# ========================================
+# Los fragments permiten reutilizar partes de las queries
+# y evitar duplicación de código en GraphQL
+# ========================================
+
+# ---------------------
+# USER FRAGMENTS
+# ---------------------
+
+# Fragment básico de usuario (campos mínimos)
+fragment UserBasic on User {
+  id
+  email
+  fullName
+  age
+  isActive
+}
+
+# Fragment completo de usuario (con roles)
+fragment UserComplete on User {
+  ...UserBasic
+  roles {
+    id
+    name
+  }
+}
+
+# ---------------------
+# MEMBERSHIP FRAGMENTS
+# ---------------------
+
+# Fragment básico de membresía
+fragment MembershipBasic on Membership {
+  id
+  name
+  cost
+  status
+}
+
+# Fragment completo de membresía
+fragment MembershipComplete on Membership {
+  ...MembershipBasic
+  max_classes_assistance
+  max_gym_assistance
+  duration_months
+  created_at
+  updated_at
+}
+
+# ---------------------
+# SUBSCRIPTION FRAGMENTS
+# ---------------------
+
+# Fragment básico de suscripción
+fragment SubscriptionBasic on Subscription {
+  id
+  name
+  cost
+  isActive
+  purchase_date
+}
+
+# Fragment completo de suscripción
+fragment SubscriptionComplete on Subscription {
+  ...SubscriptionBasic
+  max_classes_assistance
+  max_gym_assistance
+  duration_months
+  created_at
+  updated_at
+}
+
+# Fragment de suscripción con relaciones
+fragment SubscriptionWithRelations on Subscription {
+  ...SubscriptionComplete
+  memberships {
+    ...MembershipComplete
+  }
+}
+
+# ---------------------
+# ATTENDANCE FRAGMENTS
+# ---------------------
+
+# Fragment básico de asistencia
+fragment AttendanceBasic on Attendance {
+  id
+  type
+  entranceDatetime
+  exitDatetime
+  isActive
+}
+
+# Fragment completo de asistencia
+fragment AttendanceComplete on Attendance {
+  ...AttendanceBasic
+  dateKey
+  created_at
+  updated_at
+}
+
+# ---------------------
+# AUTH FRAGMENTS
+# ---------------------
+
+# Fragment de respuesta de autenticación
+fragment AuthResponseData on AuthResponse {
+  token
+  user {
+    ...UserComplete
+  }
+}
+
+# ---------------------
+# EJEMPLOS DE USO DE FRAGMENTS
+# ---------------------
+
+# Ejemplo 1: Query usando fragment UserComplete
+# query GetAllUsers {
+#   users {
+#     ...UserComplete
+#   }
+# }
+
+# Ejemplo 2: Query usando múltiples fragments
+# query GetUserWithSubscription($userId: String!) {
+#   user(id: $userId) {
+#     ...UserComplete
+#   }
+#   subscriptionByUserId(userId: $userId) {
+#     ...SubscriptionWithRelations
+#   }
+# }
+
+# Ejemplo 3: Mutation usando fragment AuthResponseData
+# mutation LoginUser($loginInput: LoginInput!) {
+#   login(loginInput: $loginInput) {
+#     ...AuthResponseData
+#   }
+# }
+
+# Ejemplo 4: Query compleja con múltiples fragments
+# query GetGymData {
+#   memberships {
+#     ...MembershipComplete
+#   }
+#   users {
+#     ...UserBasic
+#   }
+#   subscriptions {
+#     ...SubscriptionWithRelations
+#   }
+# }
+
+# ---------------------
+# BENEFICIOS DE USAR FRAGMENTS
+# ---------------------
+# 1. Reutilización: Define una vez, usa muchas veces
+# 2. Mantenibilidad: Cambios en un solo lugar
+# 3. Legibilidad: Queries más limpias y organizadas
+# 4. Consistencia: Mismos campos en todas las queries
+# 5. Type Safety: GraphQL valida que los fragments coincidan con los tipos

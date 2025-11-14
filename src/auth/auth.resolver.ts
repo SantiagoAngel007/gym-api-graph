@@ -2,8 +2,12 @@ import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { User } from './entities/users.entity';
 import { CreateUserInput } from './dto/create-user.dto';
+import { UpdateUserInput } from './dto/update-user.dto';
 import { LoginInput } from './dto/login.dto';
 import { ObjectType, Field } from '@nestjs/graphql';
+import { Auth } from './decorators/auth.decorator';
+import { GetUser } from './decorators/get-user.decorator';
+import { ValidRoles } from './enums/roles.enum';
 
 @ObjectType()
 export class AuthResponse {
@@ -18,6 +22,7 @@ export class AuthResponse {
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
+  // Mutaciones públicas (sin autenticación)
   @Mutation(() => AuthResponse)
   async signup(@Args('createUserInput') createUserInput: CreateUserInput) {
     const result = await this.authService.create(createUserInput);
@@ -36,8 +41,58 @@ export class AuthResolver {
     };
   }
 
-  @Query(() => User)
-  async me(@Args('id') id: string) {
+  // Queries protegidas - Requieren autenticación
+  @Query(() => User, {
+    name: 'me',
+    description: 'Get current authenticated user profile',
+  })
+  @Auth()
+  async me(@GetUser() user: User) {
+    return this.authService.findOne(user.id);
+  }
+
+  @Query(() => User, {
+    name: 'user',
+    description: 'Get user by ID - Only authenticated users can view other users',
+  })
+  @Auth()
+  async user(@Args('id') id: string) {
     return this.authService.findOne(id);
+  }
+
+  @Query(() => [User], {
+    name: 'users',
+    description: 'Get all users - Only authenticated users can view user list',
+  })
+  @Auth()
+  async users() {
+    return this.authService.findAll();
+  }
+
+  // Mutaciones protegidas - Solo admin puede crear/modificar/eliminar usuarios
+  @Mutation(() => User, {
+    name: 'updateUser',
+    description:
+      'Update user - Admins can update any user, users can only update themselves',
+  })
+  @Auth()
+  async updateUser(
+    @Args('updateUserInput') updateUserInput: UpdateUserInput,
+    @GetUser() authUser: User,
+  ) {
+    return this.authService.update(
+      updateUserInput.id,
+      updateUserInput,
+      authUser,
+    );
+  }
+
+  @Mutation(() => User, {
+    name: 'removeUser',
+    description: 'Delete user - Only admins can delete users',
+  })
+  @Auth(ValidRoles.admin)
+  async removeUser(@Args('id') id: string) {
+    return this.authService.remove(id);
   }
 }

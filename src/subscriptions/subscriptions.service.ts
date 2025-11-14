@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,6 +11,7 @@ import { Membership } from '../memberships/entities/membership.entity';
 import { User } from '../auth/entities/users.entity';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { AddMembershipDto } from './dto/add-membership.dto';
+import { ValidRoles } from '../auth/enums/roles.enum';
 
 @Injectable()
 export class SubscriptionsService {
@@ -152,8 +154,9 @@ export class SubscriptionsService {
 
   /**
    * Obtiene una subscripción por ID
+   * Valida que solo el dueño o un admin puedan acceder
    */
-  async findOne(id: string): Promise<Subscription> {
+  async findOne(id: string, authUser?: User): Promise<Subscription> {
     const subscription = await this.subscriptionRepository.findOne({
       where: { id },
       relations: ['user', 'memberships'],
@@ -163,17 +166,45 @@ export class SubscriptionsService {
       throw new NotFoundException(`Subscription with ID ${id} not found`);
     }
 
+    // Si se proporciona un usuario autenticado, validar permisos
+    if (authUser) {
+      const isAdmin = authUser.roles.some(
+        (role) => role.name === String(ValidRoles.admin),
+      );
+      const isOwner = subscription.user.id === authUser.id;
+
+      if (!isAdmin && !isOwner) {
+        throw new ForbiddenException(
+          'You can only access your own subscriptions',
+        );
+      }
+    }
+
     return subscription;
   }
 
   /**
    * Actualiza una subscripción
+   * Valida que solo el dueño o un admin puedan modificar
    */
   async update(
     id: string,
     updateSubscriptionDto: UpdateSubscriptionDto,
+    authUser: User,
   ): Promise<Subscription> {
     const subscription = await this.findOne(id);
+
+    // Validar permisos
+    const isAdmin = authUser.roles.some(
+      (role) => role.name === String(ValidRoles.admin),
+    );
+    const isOwner = subscription.user.id === authUser.id;
+
+    if (!isAdmin && !isOwner) {
+      throw new ForbiddenException(
+        'You can only update your own subscriptions',
+      );
+    }
 
     // Si se están actualizando las membresías, hay que cargarlas
     if (updateSubscriptionDto.membershipIds) {
@@ -196,9 +227,25 @@ export class SubscriptionsService {
 
   /**
    * Desactiva una subscripción (cuando expira o se cancela)
+   * Valida que solo el dueño o un admin puedan desactivar
    */
-  async deactivateSubscription(id: string): Promise<Subscription> {
+  async deactivateSubscription(
+    id: string,
+    authUser: User,
+  ): Promise<Subscription> {
     const subscription = await this.findOne(id);
+
+    // Validar permisos
+    const isAdmin = authUser.roles.some(
+      (role) => role.name === String(ValidRoles.admin),
+    );
+    const isOwner = subscription.user.id === authUser.id;
+
+    if (!isAdmin && !isOwner) {
+      throw new ForbiddenException(
+        'You can only deactivate your own subscriptions',
+      );
+    }
 
     subscription.isActive = false;
 
@@ -207,9 +254,22 @@ export class SubscriptionsService {
 
   /**
    * Activa una subscripción
+   * Valida que solo el dueño o un admin puedan activar
    */
-  async activateSubscription(id: string): Promise<Subscription> {
+  async activateSubscription(id: string, authUser: User): Promise<Subscription> {
     const subscription = await this.findOne(id);
+
+    // Validar permisos
+    const isAdmin = authUser.roles.some(
+      (role) => role.name === String(ValidRoles.admin),
+    );
+    const isOwner = subscription.user.id === authUser.id;
+
+    if (!isAdmin && !isOwner) {
+      throw new ForbiddenException(
+        'You can only activate your own subscriptions',
+      );
+    }
 
     // Verificar si el usuario ya tiene otra subscripción activa
     const hasActive = await this.hasActiveSubscription(subscription.user.id);
@@ -227,9 +287,23 @@ export class SubscriptionsService {
 
   /**
    * Elimina una subscripción (soft delete)
+   * Valida que solo el dueño o un admin puedan eliminar
    */
-  async remove(id: string): Promise<void> {
+  async remove(id: string, authUser: User): Promise<void> {
     const subscription = await this.findOne(id);
+
+    // Validar permisos
+    const isAdmin = authUser.roles.some(
+      (role) => role.name === String(ValidRoles.admin),
+    );
+    const isOwner = subscription.user.id === authUser.id;
+
+    if (!isAdmin && !isOwner) {
+      throw new ForbiddenException(
+        'You can only delete your own subscriptions',
+      );
+    }
+
     await this.subscriptionRepository.softRemove(subscription);
   }
 }

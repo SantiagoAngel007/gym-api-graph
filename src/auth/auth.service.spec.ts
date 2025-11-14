@@ -36,13 +36,13 @@ const mockAuthUser = {
   subscriptions: [],
   attendances: [],
   checkFieldsBeforeChanges: jest.fn(),
-} as User;
+} as unknown as User;
 
 // Prepare auth user with admin role
 const mockAuthUserAdmin = {
   ...mockAuthUser,
   roles: [{ name: ValidRoles.admin }],
-} as User;
+} as unknown as User;
 
 describe('AuthService', () => {
   // Create mock users with required entity methods
@@ -58,7 +58,7 @@ describe('AuthService', () => {
     subscriptions: [],
     attendances: [],
     checkFieldsBeforeChanges: jest.fn(),
-  } as User;
+  } as unknown as User;
 
   // Admin user for auth checks
   const mockAdminUser = {
@@ -67,7 +67,7 @@ describe('AuthService', () => {
     email: 'admin@example.com',
     roles: [{ id: 'admin-role-id', name: ValidRoles.admin, users: [] }],
     checkFieldsBeforeChanges: jest.fn(),
-  } as User;
+  } as unknown as User;
 
   // Regular user for testing
   const mockRegularUser = {
@@ -76,7 +76,7 @@ describe('AuthService', () => {
     email: 'regular@example.com',
     roles: [{ id: 'client-role-id', name: ValidRoles.client, users: [] }],
     checkFieldsBeforeChanges: jest.fn(),
-  } as User;
+  } as unknown as User;
   let service: AuthService;
   let userRepository: any;
   let roleRepository: any;

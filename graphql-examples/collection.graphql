@@ -1,0 +1,650 @@
+# ========================================
+# GRAPHQL QUERIES & MUTATIONS COLLECTION
+# Gym API GraphQL - Complete Examples
+# ========================================
+
+# ========================================
+# AUTHENTICATION MODULE
+# ========================================
+
+# ---------------------
+# MUTATION: Signup (Registro de nuevo usuario)
+# ---------------------
+mutation SignupUser($input: CreateUserInput!) {
+  signup(createUserInput: $input) {
+    token
+    user {
+      id
+      email
+      fullName
+      age
+      isActive
+      roles {
+        id
+        name
+      }
+    }
+  }
+}
+
+# Variables para Signup:
+# {
+#   "input": {
+#     "email": "client@gym.com",
+#     "fullName": "Juan Pérez",
+#     "age": 25,
+#     "password": "password123"
+#   }
+# }
+
+# ---------------------
+# MUTATION: Login (Iniciar sesión)
+# ---------------------
+mutation LoginUser($input: LoginInput!) {
+  login(loginInput: $input) {
+    token
+    user {
+      id
+      email
+      fullName
+      isActive
+      roles {
+        id
+        name
+      }
+    }
+  }
+}
+
+# Variables para Login:
+# {
+#   "input": {
+#     "email": "admin@example.com",
+#     "password": "admin123"
+#   }
+# }
+
+# ---------------------
+# QUERY: Get Current User (Me)
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+query GetCurrentUser {
+  me {
+    id
+    email
+    fullName
+    age
+    isActive
+    roles {
+      id
+      name
+    }
+  }
+}
+
+# ---------------------
+# QUERY: Get User by ID
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+query GetUserById($id: String!) {
+  user(id: $id) {
+    id
+    email
+    fullName
+    age
+    isActive
+    roles {
+      id
+      name
+    }
+  }
+}
+
+# Variables:
+# {
+#   "id": "uuid-here"
+# }
+
+# ---------------------
+# QUERY: Get All Users
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+# Solo usuarios autenticados pueden ver la lista
+query GetAllUsers {
+  users {
+    id
+    email
+    fullName
+    age
+    isActive
+    roles {
+      id
+      name
+    }
+  }
+}
+
+# ---------------------
+# MUTATION: Update User
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+# Los usuarios pueden actualizar su propio perfil
+# Los admins pueden actualizar cualquier usuario
+mutation UpdateUser($input: UpdateUserInput!) {
+  updateUser(updateUserInput: $input) {
+    id
+    email
+    fullName
+    age
+    isActive
+  }
+}
+
+# Variables para UpdateUser:
+# {
+#   "input": {
+#     "id": "uuid-here",
+#     "fullName": "Juan Carlos Pérez",
+#     "age": 26
+#   }
+# }
+
+# ---------------------
+# MUTATION: Remove User (Delete)
+# ---------------------
+# Requiere: Authorization: Bearer <token> (Admin only)
+mutation RemoveUser($id: String!) {
+  removeUser(id: $id) {
+    id
+    email
+    fullName
+  }
+}
+
+# Variables:
+# {
+#   "id": "uuid-here"
+# }
+
+# ========================================
+# MEMBERSHIPS MODULE (Plantillas de Membresías)
+# ========================================
+
+# ---------------------
+# QUERY: Get All Memberships
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+query GetAllMemberships {
+  memberships {
+    id
+    name
+    cost
+    status
+    max_classes_assistance
+    max_gym_assistance
+    duration_months
+    created_at
+    updated_at
+  }
+}
+
+# ---------------------
+# QUERY: Get Membership by ID
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+query GetMembershipById($id: String!) {
+  membership(id: $id) {
+    id
+    name
+    cost
+    status
+    max_classes_assistance
+    max_gym_assistance
+    duration_months
+    created_at
+    updated_at
+  }
+}
+
+# Variables:
+# {
+#   "id": "uuid-here"
+# }
+
+# ---------------------
+# MUTATION: Create Membership
+# ---------------------
+# Requiere: Authorization: Bearer <token> (Admin only)
+mutation CreateMembership($input: CreateMembershipInput!) {
+  createMembership(createMembershipInput: $input) {
+    id
+    name
+    cost
+    status
+    max_classes_assistance
+    max_gym_assistance
+    duration_months
+  }
+}
+
+# Variables para CreateMembership:
+# {
+#   "input": {
+#     "name": "Premium Gold",
+#     "cost": 120.00,
+#     "status": true,
+#     "max_classes_assistance": 30,
+#     "max_gym_assistance": 30,
+#     "duration_months": 1
+#   }
+# }
+
+# ---------------------
+# MUTATION: Update Membership
+# ---------------------
+# Requiere: Authorization: Bearer <token> (Admin only)
+mutation UpdateMembership($input: UpdateMembershipInput!) {
+  updateMembership(updateMembershipInput: $input) {
+    id
+    name
+    cost
+    status
+    max_classes_assistance
+    max_gym_assistance
+    duration_months
+  }
+}
+
+# Variables para UpdateMembership:
+# {
+#   "input": {
+#     "id": "uuid-here",
+#     "name": "Premium Platinum",
+#     "cost": 150.00
+#   }
+# }
+
+# ---------------------
+# MUTATION: Toggle Membership Status
+# ---------------------
+# Requiere: Authorization: Bearer <token> (Admin only)
+mutation ToggleMembershipStatus($id: String!) {
+  toggleMembershipStatus(id: $id) {
+    id
+    name
+    status
+  }
+}
+
+# Variables:
+# {
+#   "id": "uuid-here"
+# }
+
+# ---------------------
+# MUTATION: Remove Membership
+# ---------------------
+# Requiere: Authorization: Bearer <token> (Admin only)
+mutation RemoveMembership($id: String!) {
+  removeMembership(id: $id)
+}
+
+# Variables:
+# {
+#   "id": "uuid-here"
+# }
+
+# ========================================
+# SUBSCRIPTIONS MODULE (Suscripciones de Usuarios)
+# ========================================
+
+# ---------------------
+# QUERY: Get All Subscriptions
+# ---------------------
+# Requiere: Authorization: Bearer <token> (Admin only)
+query GetAllSubscriptions {
+  subscriptions {
+    id
+    name
+    cost
+    max_classes_assistance
+    max_gym_assistance
+    duration_months
+    purchase_date
+    isActive
+    created_at
+    updated_at
+    memberships {
+      id
+      name
+      cost
+    }
+  }
+}
+
+# ---------------------
+# QUERY: Get Subscription by User ID
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+# Los usuarios solo pueden ver su propia suscripción
+# Los admins pueden ver cualquier suscripción
+query GetSubscriptionByUserId($userId: String!) {
+  subscriptionByUserId(userId: $userId) {
+    id
+    name
+    cost
+    max_classes_assistance
+    max_gym_assistance
+    duration_months
+    purchase_date
+    isActive
+    memberships {
+      id
+      name
+      cost
+      max_classes_assistance
+      max_gym_assistance
+      duration_months
+    }
+  }
+}
+
+# Variables:
+# {
+#   "userId": "uuid-here"
+# }
+
+# ---------------------
+# QUERY: Get Subscription by ID
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+# Los usuarios solo pueden ver su propia suscripción
+# Los admins pueden ver cualquier suscripción
+query GetSubscriptionById($id: String!) {
+  subscription(id: $id) {
+    id
+    name
+    cost
+    max_classes_assistance
+    max_gym_assistance
+    duration_months
+    purchase_date
+    isActive
+    memberships {
+      id
+      name
+      cost
+    }
+  }
+}
+
+# Variables:
+# {
+#   "id": "uuid-here"
+# }
+
+# ---------------------
+# MUTATION: Create Subscription for User
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+# Los usuarios pueden crear suscripciones para sí mismos
+# Los admins pueden crear para cualquier usuario
+mutation CreateSubscriptionForUser($userId: String!) {
+  createSubscriptionForUser(userId: $userId) {
+    id
+    name
+    cost
+    isActive
+    purchase_date
+  }
+}
+
+# Variables:
+# {
+#   "userId": "uuid-here"
+# }
+
+# ---------------------
+# MUTATION: Update Subscription
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+# Los usuarios solo pueden actualizar su propia suscripción
+# Los admins pueden actualizar cualquier suscripción
+mutation UpdateSubscription($input: UpdateSubscriptionInput!) {
+  updateSubscription(updateSubscriptionInput: $input) {
+    id
+    name
+    cost
+    max_classes_assistance
+    max_gym_assistance
+    duration_months
+    isActive
+  }
+}
+
+# Variables para UpdateSubscription:
+# {
+#   "input": {
+#     "id": "uuid-here",
+#     "name": "Mi Suscripción Actualizada",
+#     "cost": 200
+#   }
+# }
+
+# ---------------------
+# MUTATION: Deactivate Subscription
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+# Los usuarios solo pueden desactivar su propia suscripción
+# Los admins pueden desactivar cualquier suscripción
+mutation DeactivateSubscription($id: String!) {
+  deactivateSubscription(id: $id) {
+    id
+    name
+    isActive
+  }
+}
+
+# Variables:
+# {
+#   "id": "uuid-here"
+# }
+
+# ---------------------
+# MUTATION: Activate Subscription
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+# Los usuarios solo pueden activar su propia suscripción
+# Los admins pueden activar cualquier suscripción
+mutation ActivateSubscription($id: String!) {
+  activateSubscription(id: $id) {
+    id
+    name
+    isActive
+  }
+}
+
+# Variables:
+# {
+#   "id": "uuid-here"
+# }
+
+# ---------------------
+# MUTATION: Remove Subscription
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+# Los usuarios solo pueden eliminar su propia suscripción
+# Los admins pueden eliminar cualquier suscripción
+mutation RemoveSubscription($id: String!) {
+  removeSubscription(id: $id)
+}
+
+# Variables:
+# {
+#   "id": "uuid-here"
+# }
+
+# ========================================
+# ATTENDANCES MODULE (Asistencias)
+# ========================================
+
+# ---------------------
+# QUERY: Get Attendance Status
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+# Los usuarios solo pueden ver su propio estado
+# Los admins y recepcionistas pueden ver cualquier estado
+query GetAttendanceStatus($userId: String!) {
+  attendanceStatus(userId: $userId) {
+    isInside
+    currentAttendance {
+      id
+      type
+      entranceDatetime
+      exitDatetime
+      isActive
+    }
+    availableAttendances
+  }
+}
+
+# Variables:
+# {
+#   "userId": "uuid-here"
+# }
+
+# ---------------------
+# MUTATION: Check In
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+# Los usuarios pueden hacer check-in para sí mismos
+# Los admins y recepcionistas pueden hacer check-in para cualquiera
+mutation CheckIn($input: CreateAttendanceInput!) {
+  checkIn(createAttendanceInput: $input) {
+    id
+    type
+    entranceDatetime
+    isActive
+  }
+}
+
+# Variables para CheckIn:
+# {
+#   "input": {
+#     "userId": "uuid-here",
+#     "type": "GYM"
+#   }
+# }
+# Tipos válidos: GYM o CLASS
+
+# ---------------------
+# MUTATION: Check Out
+# ---------------------
+# Requiere: Authorization: Bearer <token>
+# Los usuarios pueden hacer check-out para sí mismos
+# Los admins y recepcionistas pueden hacer check-out para cualquiera
+mutation CheckOut($userId: String!) {
+  checkOut(userId: $userId) {
+    id
+    type
+    entranceDatetime
+    exitDatetime
+    isActive
+  }
+}
+
+# Variables:
+# {
+#   "userId": "uuid-here"
+# }
+
+# ========================================
+# EJEMPLOS DE QUERIES COMPLEJAS CON FRAGMENTS
+# ========================================
+
+# ---------------------
+# EJEMPLO: Dashboard de Usuario Completo
+# ---------------------
+query UserDashboard($userId: String!) {
+  user(id: $userId) {
+    id
+    email
+    fullName
+    age
+    isActive
+    roles {
+      id
+      name
+    }
+  }
+  subscriptionByUserId(userId: $userId) {
+    id
+    name
+    cost
+    max_classes_assistance
+    max_gym_assistance
+    duration_months
+    isActive
+    purchase_date
+    memberships {
+      id
+      name
+      cost
+    }
+  }
+  attendanceStatus(userId: $userId) {
+    isInside
+    availableAttendances
+    currentAttendance {
+      id
+      type
+      entranceDatetime
+    }
+  }
+}
+
+# ---------------------
+# EJEMPLO: Dashboard de Admin (Vista General)
+# ---------------------
+query AdminDashboard {
+  users {
+    id
+    email
+    fullName
+    isActive
+    roles {
+      name
+    }
+  }
+  memberships {
+    id
+    name
+    cost
+    status
+  }
+  subscriptions {
+    id
+    name
+    isActive
+  }
+}
+
+# ========================================
+# HEADERS REQUERIDOS PARA AUTENTICACIÓN
+# ========================================
+# Para todas las queries/mutations protegidas, incluir en headers:
+# {
+#   "Authorization": "Bearer <tu-token-jwt-aqui>"
+# }
+
+# ========================================
+# FLUJO COMPLETO DE EJEMPLO
+# ========================================
+# 1. Signup o Login para obtener token
+# 2. Usar token en header Authorization para todas las requests posteriores
+# 3. Ver membresías disponibles (GetAllMemberships)
+# 4. Crear suscripción para tu usuario (CreateSubscriptionForUser)
+# 5. Ver tu suscripción (GetSubscriptionByUserId)
+# 6. Hacer check-in al gym (CheckIn)
+# 7. Ver tu estado de asistencia (GetAttendanceStatus)
+# 8. Hacer check-out (CheckOut)
