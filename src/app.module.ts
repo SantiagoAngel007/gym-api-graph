@@ -11,6 +11,7 @@ import { AttendancesModule } from './attendances/attendances.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { SeedModule } from './seed/seed.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -20,6 +21,9 @@ import { SeedModule } from './seed/seed.module';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       playground: true,
+      context: ({ req, res }) => {
+        return { req, res };
+      },
     }),
 
     TypeOrmModule.forRoot({

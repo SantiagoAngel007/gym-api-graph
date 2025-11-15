@@ -67,8 +67,13 @@ export class MembershipsService {
       await this.validateNameIsUnique(updateMembershipDto.name);
     }
 
-    //aplicar actualizaciones
-    Object.assign(existingMembership, updateMembershipDto);
+    //aplicar actualizaciones (filtrando undefined)
+    const updateData = Object.fromEntries(
+      Object.entries(updateMembershipDto).filter(
+        ([_, value]) => value !== undefined,
+      ),
+    );
+    Object.assign(existingMembership, updateData);
 
     return await this.membershipRepository.save(existingMembership);
   }

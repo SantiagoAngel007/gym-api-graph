@@ -6,7 +6,7 @@ type Membership {
   id: String!
   name: String!
   cost: Float!
-  status: Boolean!
+  status: Boolean
   max_classes_assistance: Int!
   max_gym_assistance: Int!
   duration_months: Int!
@@ -61,35 +61,106 @@ enum AttendanceType {
   CLASS
 }
 
+type AvailableAttendancesResponse {
+  gym: Int!
+  classes: Int!
+}
+
 type AttendanceStatusResponse {
   isInside: Boolean!
   currentAttendance: Attendance
-  availableAttendances: String!
+  availableAttendances: AvailableAttendancesResponse!
 }
 
 type Query {
+  """Get all available memberships - Requires authentication"""
   memberships: [Membership!]!
+
+  """Get membership by ID - Requires authentication"""
   membership(id: String!): Membership!
-  me(id: String!): User!
-  subscriptionByUserId(userId: String!): Subscription!
-  subscription(id: String!): Subscription!
+
+  """Get current authenticated user profile"""
+  me: User!
+
+  """Get user by ID - Only authenticated users can view other users"""
+  user(id: String!): User!
+
+  """Get all users - Only authenticated users can view user list"""
+  users: [User!]!
+
+  """Get all subscriptions - Admin only"""
   subscriptions: [Subscription!]!
+
+  """Get subscription by user ID - Requires authentication"""
+  subscriptionByUserId(userId: String!): Subscription!
+
+  """
+  Get subscription by ID - Users can only access their own, admins can access all
+  """
+  subscription(id: String!): Subscription!
+
+  """
+  Get attendance status for a user - Users can only see their own, admins and receptionists can see all
+  """
   attendanceStatus(userId: String!): AttendanceStatusResponse!
 }
 
 type Mutation {
+  """Create new membership template - Admin only"""
   createMembership(createMembershipInput: CreateMembershipInput!): Membership!
+
+  """Update membership template - Admin only"""
   updateMembership(updateMembershipInput: UpdateMembershipInput!): Membership!
+
+  """Activate or deactivate membership - Admin only"""
   toggleMembershipStatus(id: String!): Membership!
+
+  """Delete membership template - Admin only"""
   removeMembership(id: String!): Boolean!
   signup(createUserInput: CreateUserInput!): AuthResponse!
   login(loginInput: LoginInput!): AuthResponse!
+
+  """
+  Update user - Admins can update any user, users can only update themselves
+  """
+  updateUser(updateUserInput: UpdateUserInput!): User!
+
+  """Delete user - Only admins can delete users"""
+  removeUser(id: String!): User!
+
+  """
+  Create subscription for user - Users can create for themselves, admins can create for anyone
+  """
   createSubscriptionForUser(userId: String!): Subscription!
+
+  """
+  Update subscription - Users can only update their own, admins can update all
+  """
   updateSubscription(updateSubscriptionInput: UpdateSubscriptionInput!): Subscription!
+
+  """
+  Deactivate subscription - Users can only deactivate their own, admins can deactivate all
+  """
   deactivateSubscription(id: String!): Subscription!
+
+  """
+  Activate subscription - Users can only activate their own, admins can activate all
+  """
   activateSubscription(id: String!): Subscription!
+
+  """
+  Delete subscription - Users can only delete their own, admins can delete all
+  """
   removeSubscription(id: String!): Boolean!
+
+  """
+  Check in to gym or class - Users can check in themselves, admins and receptionists can check in anyone
+  """
   checkIn(createAttendanceInput: CreateAttendanceInput!): Attendance!
+
+  """
+  Check out from gym or class - Users can check out themselves, admins and receptionists can check out anyone
+  """
   checkOut(userId: String!): Attendance!
 }
 
@@ -122,6 +193,15 @@ input CreateUserInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input UpdateUserInput {
+  email: String
+  fullName: String
+  age: Int
+  password: String
+  id: String!
+  isActive: Boolean
 }
 
 input UpdateSubscriptionInput {

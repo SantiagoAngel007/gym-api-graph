@@ -5,6 +5,7 @@ import {
   Args,
   ObjectType,
   Field,
+  Int,
 } from '@nestjs/graphql';
 import { AttendancesService } from './attendances.service';
 import { Attendance } from './entities/attendance.entity';
@@ -17,6 +18,15 @@ import { ValidRoles } from 'src/auth/enums/roles.enum';
 import { ForbiddenException } from '@nestjs/common';
 
 @ObjectType()
+export class AvailableAttendancesResponse {
+  @Field(() => Int)
+  gym: number;
+
+  @Field(() => Int)
+  classes: number;
+}
+
+@ObjectType()
 export class AttendanceStatusResponse {
   @Field()
   isInside: boolean;
@@ -24,8 +34,8 @@ export class AttendanceStatusResponse {
   @Field(() => Attendance, { nullable: true })
   currentAttendance?: Attendance;
 
-  @Field()
-  availableAttendances: string;
+  @Field(() => AvailableAttendancesResponse)
+  availableAttendances: AvailableAttendancesResponse;
 }
 
 @Resolver('Attendance')

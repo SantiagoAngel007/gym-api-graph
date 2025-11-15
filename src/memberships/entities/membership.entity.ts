@@ -24,8 +24,8 @@ export class Membership {
   @Field(() => Float)
   cost: number;
 
-  @Column('boolean')
-  @Field()
+  @Column('boolean', { default: true })
+  @Field({ nullable: true })
   status?: boolean;
 
   @Column('int')

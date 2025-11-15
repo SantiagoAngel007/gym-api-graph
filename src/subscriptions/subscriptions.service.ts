@@ -219,8 +219,13 @@ export class SubscriptionsService {
       subscription.memberships = memberships;
     }
 
-    // Actualizar los demás campos
-    Object.assign(subscription, updateSubscriptionDto);
+    // Actualizar los demás campos (filtrando undefined)
+    const updateData = Object.fromEntries(
+      Object.entries(updateSubscriptionDto).filter(
+        ([_, value]) => value !== undefined,
+      ),
+    );
+    Object.assign(subscription, updateData);
 
     return await this.subscriptionRepository.save(subscription);
   }

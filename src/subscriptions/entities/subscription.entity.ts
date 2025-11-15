@@ -38,7 +38,7 @@ export class Subscription {
   @Field(() => Int)
   duration_months: number;
 
-  @Column('date')
+  @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
   @Field()
   purchase_date: Date;
 

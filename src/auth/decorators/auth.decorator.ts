@@ -3,10 +3,11 @@ import { ValidRoles } from '../enums/roles.enum';
 import { RoleProtected } from './role-protected/role-protected.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { UserRoleGuard } from '../guards/user-role.guard';
+import { GqlAuthGuard } from '../guards/gql-auth.guard';
 
 export function Auth(...roles: ValidRoles[]) {
   return applyDecorators(
     RoleProtected(...roles),
-    UseGuards(AuthGuard(), UserRoleGuard),
+    UseGuards(GqlAuthGuard, UserRoleGuard),
   );
 }

@@ -13,7 +13,9 @@ import { SubscriptionsService } from './subscriptions.service';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { AddMembershipDto } from './dto/add-membership.dto';
 import { Auth } from '../auth/decorators/auth.decorator';
+import { GetUser } from '../auth/decorators/get-user.decorator';
 import { ValidRoles } from '../auth/enums/roles.enum';
+import { User } from '../auth/entities/users.entity';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -143,8 +145,9 @@ export class SubscriptionsController {
   update(
     @Param('id') id: string,
     @Body() updateSubscriptionDto: UpdateSubscriptionDto,
+    @GetUser() authUser: User,
   ) {
-    return this.subscriptionsService.update(id, updateSubscriptionDto);
+    return this.subscriptionsService.update(id, updateSubscriptionDto, authUser);
   }
 
   /**
@@ -160,8 +163,8 @@ export class SubscriptionsController {
   })
   @ApiResponse({ status: 200, description: 'Subscription deactivated.' })
   @ApiResponse({ status: 404, description: 'Subscription not found.' })
-  deactivate(@Param('id') id: string) {
-    return this.subscriptionsService.deactivateSubscription(id);
+  deactivate(@Param('id') id: string, @GetUser() authUser: User) {
+    return this.subscriptionsService.deactivateSubscription(id, authUser);
   }
 
   /**
@@ -177,8 +180,8 @@ export class SubscriptionsController {
   })
   @ApiResponse({ status: 200, description: 'Subscription activated.' })
   @ApiResponse({ status: 404, description: 'Subscription not found.' })
-  activate(@Param('id') id: string) {
-    return this.subscriptionsService.activateSubscription(id);
+  activate(@Param('id') id: string, @GetUser() authUser: User) {
+    return this.subscriptionsService.activateSubscription(id, authUser);
   }
 
   /**
@@ -195,7 +198,7 @@ export class SubscriptionsController {
     description: 'Subscription successfully deleted.',
   })
   @ApiResponse({ status: 404, description: 'Subscription not found.' })
-  remove(@Param('id') id: string) {
-    return this.subscriptionsService.remove(id);
+  remove(@Param('id') id: string, @GetUser() authUser: User) {
+    return this.subscriptionsService.remove(id, authUser);
   }
 }
