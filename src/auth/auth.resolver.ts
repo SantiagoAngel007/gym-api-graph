@@ -88,13 +88,14 @@ export class AuthResolver {
     );
   }
 
-  @Mutation(() => User, {
+  @Mutation(() => Boolean, {
     name: 'removeUser',
     description: 'Delete user - Only admins can delete users',
   })
   @Auth(ValidRoles.admin)
   async removeUser(@Args('id') id: string) {
-    return this.authService.remove(id);
+    await this.authService.remove(id);
+    return true;
   }
 
   @Mutation(() => User, {

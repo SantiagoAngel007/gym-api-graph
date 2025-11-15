@@ -212,7 +212,7 @@ export class AuthService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<void> {
     const user = await this.userRepository.findOne({
       where: { id },
       relations: ['roles'],
@@ -242,7 +242,6 @@ export class AuthService {
 
       // Ahora eliminar el usuario
       await this.userRepository.remove(user);
-      return { message: `User with ID ${id} deleted successfully` };
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException('Error deleting user');
