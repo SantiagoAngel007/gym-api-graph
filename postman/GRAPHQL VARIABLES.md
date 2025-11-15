@@ -228,6 +228,26 @@ Authentication
     "id": "{{SUBSCRIPTION_ID}}"
   }
 
+  Add Membership to Subscription
+  {
+    "addMembershipInput": {
+      "subscriptionId": "{{SUBSCRIPTION_ID}}",
+      "membershipId": "{{MEMBERSHIP_ID}}"
+    }
+  }
+
+  **Nota:** Este endpoint agrega una membresía a la suscripción de un usuario, lo que le proporciona pases disponibles.
+  Después de ejecutar este endpoint, el usuario tendrá acceso a:
+  - Pases de gym según la membresía agregada
+  - Pases de clases según la membresía agregada
+
+  **Pasos recomendados:**
+  1. Login como usuario (se guarda AUTH_TOKEN y USER_ID)
+  2. Get All Memberships (se guarda MEMBERSHIP_ID)
+  3. Create Subscription for User (se guarda SUBSCRIPTION_ID)
+  4. Add Membership to Subscription (vincula la membresía a la suscripción)
+  5. Ahora el usuario tendrá pases disponibles para hacer check-in
+
   ---
   Attendances
 

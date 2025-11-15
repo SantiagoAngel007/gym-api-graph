@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, InputType, Field } from '@nestjs/graphql';
 import { SubscriptionsService } from './subscriptions.service';
 import { Subscription } from './entities/subscription.entity';
 import {
@@ -13,6 +13,16 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from 'src/auth/entities/users.entity';
 import { ValidRoles } from 'src/auth/enums/roles.enum';
+import { AddMembershipDto } from './dto/add-membership.dto';
+
+@InputType()
+export class AddMembershipInput {
+  @Field()
+  subscriptionId: string;
+
+  @Field()
+  membershipId: string;
+}
 
 @Resolver('Subscription')
 export class SubscriptionsResolver {
@@ -133,5 +143,29 @@ export class SubscriptionsResolver {
   async removeSubscription(@Args('id') id: string, @GetUser() authUser: User) {
     await this.subscriptionsService.remove(id, authUser);
     return true;
+  }
+
+  @Mutation(() => Subscription, {
+    name: 'addMembershipToSubscription',
+    description:
+      'Add a membership to a subscription - Users can only add to their own, admins can add to any',
+  })
+  @Auth()
+  async addMembershipToSubscription(
+    @Args('addMembershipInput') addMembershipInput: AddMembershipInput,
+    @GetUser() authUser: User,
+  ) {
+    const subscription = await this.subscriptionsService.findOne(
+      addMembershipInput.subscriptionId,
+      authUser,
+    );
+
+    const addDto = new AddMembershipDto();
+    addDto.membershipId = addMembershipInput.membershipId;
+
+    return this.subscriptionsService.addMembershipToSubscription(
+      addMembershipInput.subscriptionId,
+      addDto,
+    );
   }
 }

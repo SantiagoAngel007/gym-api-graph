@@ -72,10 +72,16 @@ export class AuthService {
         throw subscriptionError;
       }
 
-      delete user.password;
+      // Recargar el usuario con los roles cargados
+      const userWithRoles = await this.userRepository.findOne({
+        where: { id: user.id },
+        relations: ['roles'],
+      });
+
+      delete userWithRoles.password;
       return {
-        ...user,
-        token: this.getJwtToken({ id: user.id, email: user.email }),
+        ...userWithRoles,
+        token: this.getJwtToken({ id: userWithRoles.id, email: userWithRoles.email }),
       };
     } catch (error) {
       this.handleException(error);

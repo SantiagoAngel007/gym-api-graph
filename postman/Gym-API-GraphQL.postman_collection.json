@@ -533,6 +533,48 @@
             },
             "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "http", "host": ["{{BASE_URL_HOST}}"], "port": "{{BASE_URL_PORT}}", "path": ["graphql"]}
           }
+        },
+        {
+          "name": "Add Membership to Subscription",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.addMembershipToSubscription) {",
+                  "      const subscription = jsonData.data.addMembershipToSubscription;",
+                  "      pm.environment.set('SUBSCRIPTION_ID', subscription.id);",
+                  "      console.log('✓ Membresía agregada a la suscripción');",
+                  "      console.log('✓ SUBSCRIPTION_ID guardado:', subscription.id);",
+                  "      console.log('  Pases disponibles - Gym:', subscription.max_gym_assistance);",
+                  "      console.log('  Pases disponibles - Clases:', subscription.max_classes_assistance);",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al agregar membresía:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation addMembershipToSubscription($addMembershipInput: AddMembershipInput!) {\n  addMembershipToSubscription(addMembershipInput: $addMembershipInput) {\n    id\n    name\n    cost\n    max_classes_assistance\n    max_gym_assistance\n    duration_months\n    isActive\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "http", "host": ["{{BASE_URL_HOST}}"], "port": "{{BASE_URL_PORT}}", "path": ["graphql"]}
+          }
         }
       ]
     },

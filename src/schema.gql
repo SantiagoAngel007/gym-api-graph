@@ -19,12 +19,18 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Role {
+  id: String!
+  name: String!
+}
+
 type User {
   id: String!
   email: String!
   fullName: String!
   age: Int!
   isActive: Boolean!
+  roles: [Role!]!
 }
 
 type Subscription {
@@ -154,6 +160,11 @@ type Mutation {
   removeSubscription(id: String!): Boolean!
 
   """
+  Add a membership to a subscription - Users can only add to their own, admins can add to any
+  """
+  addMembershipToSubscription(addMembershipInput: AddMembershipInput!): Subscription!
+
+  """
   Check in to gym or class - Users can check in themselves, admins and receptionists can check in anyone
   """
   checkIn(createAttendanceInput: CreateAttendanceInput!): Attendance!
@@ -214,6 +225,11 @@ input UpdateSubscriptionInput {
   purchase_date: DateTime
   membershipIds: [String!]
   isActive: Boolean
+}
+
+input AddMembershipInput {
+  subscriptionId: String!
+  membershipId: String!
 }
 
 input CreateAttendanceInput {

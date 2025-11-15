@@ -52,6 +52,7 @@ export class User {
     joinColumn: { name: 'userId', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'roleId', referencedColumnName: 'id' },
   })
+  @Field(() => [Role])
   roles: Role[];
 
   @BeforeInsert()
