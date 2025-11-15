@@ -30,16 +30,10 @@ export class UserRoleGuard implements CanActivate {
 
     const user = req.user as User;
 
-    if (!user || !user.roles)
-      throw new BadRequestException(`User or roles not found`);
-
-    // TODO: TEMPORAL - Permitir eliminación de usuarios sin roles asignados
-    // Esto debería ser arreglado asignando roles por defecto al crear usuarios
-    if (!user.roles || user.roles.length === 0) {
-      console.warn(
-        `[WARN] User ${user.email} has no roles assigned. Allowing operation temporarily.`,
+    if (!user || !user.roles || user.roles.length === 0) {
+      throw new BadRequestException(
+        `User or roles not found. All users must have at least one role assigned.`,
       );
-      return true;
     }
 
     const hasValidRole = user.roles.some((role) =>

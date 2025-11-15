@@ -78,6 +78,12 @@ export class AuthService {
         relations: ['roles'],
       });
 
+      if (!userWithRoles) {
+        throw new InternalServerErrorException(
+          'User created but not found after creation',
+        );
+      }
+
       delete userWithRoles.password;
       return {
         ...userWithRoles,
@@ -230,12 +236,116 @@ export class AuthService {
     }
 
     try {
-      await this.userRepository.delete(id);
+      // Limpiar las relaciones de roles antes de eliminar el usuario
+      user.roles = [];
+      await this.userRepository.save(user);
+
+      // Ahora eliminar el usuario
+      await this.userRepository.remove(user);
       return { message: `User with ID ${id} deleted successfully` };
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException('Error deleting user');
     }
+  }
+
+  async addRole(userId: string, roleName: ValidRoles) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles'],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    const role = await this.roleRepository.findOneBy({ name: roleName });
+    if (!role) {
+      throw new NotFoundException(`Role ${roleName} not found`);
+    }
+
+    // Verificar si el usuario ya tiene este rol
+    const hasRole = user.roles.some((r) => r.name === roleName);
+    if (hasRole) {
+      throw new BadRequestException(
+        `User already has the role ${roleName}`,
+      );
+    }
+
+    user.roles.push(role);
+    await this.userRepository.save(user);
+
+    // Recargar el usuario con los roles actualizados
+    const updatedUser = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles'],
+    });
+
+    if (!updatedUser) {
+      throw new InternalServerErrorException(
+        'User updated but not found after update',
+      );
+    }
+
+    delete updatedUser.password;
+    return updatedUser;
+  }
+
+  async removeRole(userId: string, roleName: ValidRoles) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles'],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    // Verificar si el usuario tiene este rol
+    const hasRole = user.roles.some((r) => r.name === roleName);
+    if (!hasRole) {
+      throw new BadRequestException(`User does not have the role ${roleName}`);
+    }
+
+    // No permitir quitar el último rol
+    if (user.roles.length === 1) {
+      throw new BadRequestException(
+        'Cannot remove the last role from a user. Users must have at least one role.',
+      );
+    }
+
+    // No permitir quitar el rol de admin si es el último admin
+    if (roleName === ValidRoles.admin) {
+      const adminCount = await this.userRepository
+        .createQueryBuilder('user')
+        .innerJoin('user.roles', 'role')
+        .where('role.name = :role', { role: 'admin' })
+        .getCount();
+
+      if (adminCount <= 1) {
+        throw new BadRequestException(
+          'Cannot remove admin role from the last admin user',
+        );
+      }
+    }
+
+    user.roles = user.roles.filter((r) => r.name !== roleName);
+    await this.userRepository.save(user);
+
+    // Recargar el usuario con los roles actualizados
+    const updatedUser = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles'],
+    });
+
+    if (!updatedUser) {
+      throw new InternalServerErrorException(
+        'User updated but not found after update',
+      );
+    }
+
+    delete updatedUser.password;
+    return updatedUser;
   }
 
   encryptPassword(password: string): string {

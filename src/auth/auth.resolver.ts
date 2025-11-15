@@ -8,6 +8,7 @@ import { ObjectType, Field } from '@nestjs/graphql';
 import { Auth } from './decorators/auth.decorator';
 import { GetUser } from './decorators/get-user.decorator';
 import { ValidRoles } from './enums/roles.enum';
+import { AddRoleInput, RemoveRoleInput } from './dto/manage-role.dto';
 
 @ObjectType()
 export class AuthResponse {
@@ -94,5 +95,28 @@ export class AuthResolver {
   @Auth(ValidRoles.admin)
   async removeUser(@Args('id') id: string) {
     return this.authService.remove(id);
+  }
+
+  @Mutation(() => User, {
+    name: 'addRoleToUser',
+    description: 'Add a role to a user - Only admins can manage roles',
+  })
+  @Auth(ValidRoles.admin)
+  async addRoleToUser(@Args('addRoleInput') addRoleInput: AddRoleInput) {
+    return this.authService.addRole(addRoleInput.userId, addRoleInput.roleName);
+  }
+
+  @Mutation(() => User, {
+    name: 'removeRoleFromUser',
+    description: 'Remove a role from a user - Only admins can manage roles',
+  })
+  @Auth(ValidRoles.admin)
+  async removeRoleFromUser(
+    @Args('removeRoleInput') removeRoleInput: RemoveRoleInput,
+  ) {
+    return this.authService.removeRole(
+      removeRoleInput.userId,
+      removeRoleInput.roleName,
+    );
   }
 }
