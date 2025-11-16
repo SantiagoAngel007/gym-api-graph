@@ -132,7 +132,13 @@ type Mutation {
   updateUser(updateUserInput: UpdateUserInput!): User!
 
   """Delete user - Only admins can delete users"""
-  removeUser(id: String!): User!
+  removeUser(id: String!): Boolean!
+
+  """Add a role to a user - Only admins can manage roles"""
+  addRoleToUser(addRoleInput: AddRoleInput!): User!
+
+  """Remove a role from a user - Only admins can manage roles"""
+  removeRoleFromUser(removeRoleInput: RemoveRoleInput!): User!
 
   """
   Create subscription for user - Users can create for themselves, admins can create for anyone
@@ -213,6 +219,16 @@ input UpdateUserInput {
   password: String
   id: String!
   isActive: Boolean
+}
+
+input AddRoleInput {
+  userId: String!
+  roleName: String!
+}
+
+input RemoveRoleInput {
+  userId: String!
+  roleName: String!
 }
 
 input UpdateSubscriptionInput {

@@ -90,6 +90,46 @@
           }
         },
         {
+          "name": "Login - Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.login) {",
+                  "      const { token, user } = jsonData.data.login;",
+                  "      pm.environment.set('ADMIN_TOKEN', token);",
+                  "      pm.environment.set('ADMIN_ID', user.id);",
+                  "      console.log('✓ ADMIN_TOKEN guardado:', token.substring(0, 20) + '...');",
+                  "      console.log('✓ ADMIN_ID guardado:', user.id);",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al guardar variables:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation login($loginInput: LoginInput!) {\n  login(loginInput: $loginInput) {\n    token\n    user {\n      id\n      email\n      fullName\n      age\n      isActive\n    }\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "http", "host": ["{{BASE_URL_HOST}}"], "port": "{{BASE_URL_PORT}}", "path": ["graphql"]}
+          }
+        },
+        {
           "name": "Get Current User (Me)",
           "request": {
             "method": "POST",
