@@ -94,10 +94,12 @@ type Query {
   """Get all users - Only authenticated users can view user list"""
   users: [User!]!
 
-  """Get all subscriptions - Admin only"""
+  """Get all subscriptions - Admin and receptionist only"""
   subscriptions: [Subscription!]!
 
-  """Get subscription by user ID - Requires authentication"""
+  """
+  Get subscription by user ID - Users can access their own, admin and receptionist can access all
+  """
   subscriptionByUserId(userId: String!): Subscription!
 
   """
@@ -141,22 +143,22 @@ type Mutation {
   removeRoleFromUser(removeRoleInput: RemoveRoleInput!): User!
 
   """
-  Create subscription for user - Users can create for themselves, admins can create for anyone
+  Create subscription for user - Users can create for themselves, admin and receptionist can create for anyone
   """
   createSubscriptionForUser(userId: String!): Subscription!
 
   """
-  Update subscription - Users can only update their own, admins can update all
+  Update subscription - Users can only update their own, admin and receptionist can update all
   """
   updateSubscription(updateSubscriptionInput: UpdateSubscriptionInput!): Subscription!
 
   """
-  Deactivate subscription - Users can only deactivate their own, admins can deactivate all
+  Deactivate subscription - Users can only deactivate their own, admin and receptionist can deactivate all
   """
   deactivateSubscription(id: String!): Subscription!
 
   """
-  Activate subscription - Users can only activate their own, admins can activate all
+  Activate subscription - Users can only activate their own, admin and receptionist can activate all
   """
   activateSubscription(id: String!): Subscription!
 
@@ -166,7 +168,7 @@ type Mutation {
   removeSubscription(id: String!): Boolean!
 
   """
-  Add a membership to a subscription - Users can only add to their own, admins can add to any
+  Add a membership to a subscription - Users can only add to their own, admin and receptionist can add to any
   """
   addMembershipToSubscription(addMembershipInput: AddMembershipInput!): Subscription!
 

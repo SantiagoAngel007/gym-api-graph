@@ -28,31 +28,33 @@ export class AddMembershipInput {
 export class SubscriptionsResolver {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}
 
-  // Queries protegidas - Solo admin puede ver todas las suscripciones
+  // Queries protegidas - Solo admin y receptionist pueden ver todas las suscripciones
   @Query(() => [Subscription], {
     name: 'subscriptions',
-    description: 'Get all subscriptions - Admin only',
+    description: 'Get all subscriptions - Admin and receptionist only',
   })
-  @Auth(ValidRoles.admin)
-  async subscriptions() {
-    return this.subscriptionsService.findAll();
+  @Auth()
+  async subscriptions(@GetUser() authUser: User) {
+    return this.subscriptionsService.findAll(authUser);
   }
 
   // Queries protegidas - Usuarios autenticados pueden ver suscripciones
   @Query(() => Subscription, {
     name: 'subscriptionByUserId',
-    description: 'Get subscription by user ID - Requires authentication',
+    description: 'Get subscription by user ID - Users can access their own, admin and receptionist can access all',
   })
   @Auth()
   async subscriptionByUserId(
     @Args('userId') userId: string,
     @GetUser() authUser: User,
   ) {
-    // Solo admins pueden ver suscripciones de otros usuarios
-    const isAdmin = authUser.roles.some(
-      (role) => role.name === String(ValidRoles.admin),
+    // Admin y receptionist pueden ver suscripciones de cualquier usuario
+    const isAllowed = authUser.roles.some(
+      (role) =>
+        role.name === String(ValidRoles.admin) ||
+        role.name === String(ValidRoles.receptionist),
     );
-    if (!isAdmin && authUser.id !== userId) {
+    if (!isAllowed && authUser.id !== userId) {
       throw new Error('You can only access your own subscription');
     }
     return this.subscriptionsService.findSubscriptionByUserId(userId);
@@ -72,18 +74,20 @@ export class SubscriptionsResolver {
   @Mutation(() => Subscription, {
     name: 'createSubscriptionForUser',
     description:
-      'Create subscription for user - Users can create for themselves, admins can create for anyone',
+      'Create subscription for user - Users can create for themselves, admin and receptionist can create for anyone',
   })
   @Auth()
   async createSubscriptionForUser(
     @Args('userId') userId: string,
     @GetUser() authUser: User,
   ) {
-    // Solo admins pueden crear suscripciones para otros usuarios
-    const isAdmin = authUser.roles.some(
-      (role) => role.name === String(ValidRoles.admin),
+    // Admin y receptionist pueden crear suscripciones para otros usuarios
+    const isAllowed = authUser.roles.some(
+      (role) =>
+        role.name === String(ValidRoles.admin) ||
+        role.name === String(ValidRoles.receptionist),
     );
-    if (!isAdmin && authUser.id !== userId) {
+    if (!isAllowed && authUser.id !== userId) {
       throw new Error('You can only create subscriptions for yourself');
     }
     return this.subscriptionsService.createSubscriptionForUser(userId);
@@ -92,7 +96,7 @@ export class SubscriptionsResolver {
   @Mutation(() => Subscription, {
     name: 'updateSubscription',
     description:
-      'Update subscription - Users can only update their own, admins can update all',
+      'Update subscription - Users can only update their own, admin and receptionist can update all',
   })
   @Auth()
   async updateSubscription(
@@ -111,7 +115,7 @@ export class SubscriptionsResolver {
   @Mutation(() => Subscription, {
     name: 'deactivateSubscription',
     description:
-      'Deactivate subscription - Users can only deactivate their own, admins can deactivate all',
+      'Deactivate subscription - Users can only deactivate their own, admin and receptionist can deactivate all',
   })
   @Auth()
   async deactivateSubscription(
@@ -124,7 +128,7 @@ export class SubscriptionsResolver {
   @Mutation(() => Subscription, {
     name: 'activateSubscription',
     description:
-      'Activate subscription - Users can only activate their own, admins can activate all',
+      'Activate subscription - Users can only activate their own, admin and receptionist can activate all',
   })
   @Auth()
   async activateSubscription(
@@ -148,7 +152,7 @@ export class SubscriptionsResolver {
   @Mutation(() => Subscription, {
     name: 'addMembershipToSubscription',
     description:
-      'Add a membership to a subscription - Users can only add to their own, admins can add to any',
+      'Add a membership to a subscription - Users can only add to their own, admin and receptionist can add to any',
   })
   @Auth()
   async addMembershipToSubscription(

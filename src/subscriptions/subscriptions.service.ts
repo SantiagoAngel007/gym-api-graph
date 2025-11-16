@@ -145,8 +145,23 @@ export class SubscriptionsService {
 
   /**
    * Obtiene todas las subscripciones
+   * Solo admin y receptionist pueden ver todas
    */
-  async findAll(): Promise<Subscription[]> {
+  async findAll(authUser?: User): Promise<Subscription[]> {
+    if (authUser) {
+      const isAllowed = authUser.roles.some(
+        (role) =>
+          role.name === String(ValidRoles.admin) ||
+          role.name === String(ValidRoles.receptionist),
+      );
+
+      if (!isAllowed) {
+        throw new ForbiddenException(
+          'Only admin and receptionist can view all subscriptions',
+        );
+      }
+    }
+
     return await this.subscriptionRepository.find({
       relations: ['user', 'memberships'],
     });
@@ -154,7 +169,7 @@ export class SubscriptionsService {
 
   /**
    * Obtiene una subscripción por ID
-   * Valida que solo el dueño o un admin puedan acceder
+   * Valida que solo el dueño, admin o receptionist puedan acceder
    */
   async findOne(id: string, authUser?: User): Promise<Subscription> {
     const subscription = await this.subscriptionRepository.findOne({
@@ -168,12 +183,14 @@ export class SubscriptionsService {
 
     // Si se proporciona un usuario autenticado, validar permisos
     if (authUser) {
-      const isAdmin = authUser.roles.some(
-        (role) => role.name === String(ValidRoles.admin),
+      const isAllowed = authUser.roles.some(
+        (role) =>
+          role.name === String(ValidRoles.admin) ||
+          role.name === String(ValidRoles.receptionist),
       );
       const isOwner = subscription.user.id === authUser.id;
 
-      if (!isAdmin && !isOwner) {
+      if (!isAllowed && !isOwner) {
         throw new ForbiddenException(
           'You can only access your own subscriptions',
         );
@@ -185,7 +202,7 @@ export class SubscriptionsService {
 
   /**
    * Actualiza una subscripción
-   * Valida que solo el dueño o un admin puedan modificar
+   * Valida que solo el dueño, admin o receptionist puedan modificar
    */
   async update(
     id: string,
@@ -195,12 +212,14 @@ export class SubscriptionsService {
     const subscription = await this.findOne(id);
 
     // Validar permisos
-    const isAdmin = authUser.roles.some(
-      (role) => role.name === String(ValidRoles.admin),
+    const isAllowed = authUser.roles.some(
+      (role) =>
+        role.name === String(ValidRoles.admin) ||
+        role.name === String(ValidRoles.receptionist),
     );
     const isOwner = subscription.user.id === authUser.id;
 
-    if (!isAdmin && !isOwner) {
+    if (!isAllowed && !isOwner) {
       throw new ForbiddenException(
         'You can only update your own subscriptions',
       );
@@ -232,7 +251,7 @@ export class SubscriptionsService {
 
   /**
    * Desactiva una subscripción (cuando expira o se cancela)
-   * Valida que solo el dueño o un admin puedan desactivar
+   * Valida que solo el dueño, admin o receptionist puedan desactivar
    */
   async deactivateSubscription(
     id: string,
@@ -241,12 +260,14 @@ export class SubscriptionsService {
     const subscription = await this.findOne(id);
 
     // Validar permisos
-    const isAdmin = authUser.roles.some(
-      (role) => role.name === String(ValidRoles.admin),
+    const isAllowed = authUser.roles.some(
+      (role) =>
+        role.name === String(ValidRoles.admin) ||
+        role.name === String(ValidRoles.receptionist),
     );
     const isOwner = subscription.user.id === authUser.id;
 
-    if (!isAdmin && !isOwner) {
+    if (!isAllowed && !isOwner) {
       throw new ForbiddenException(
         'You can only deactivate your own subscriptions',
       );
@@ -259,18 +280,20 @@ export class SubscriptionsService {
 
   /**
    * Activa una subscripción
-   * Valida que solo el dueño o un admin puedan activar
+   * Valida que solo el dueño, admin o receptionist puedan activar
    */
   async activateSubscription(id: string, authUser: User): Promise<Subscription> {
     const subscription = await this.findOne(id);
 
     // Validar permisos
-    const isAdmin = authUser.roles.some(
-      (role) => role.name === String(ValidRoles.admin),
+    const isAllowed = authUser.roles.some(
+      (role) =>
+        role.name === String(ValidRoles.admin) ||
+        role.name === String(ValidRoles.receptionist),
     );
     const isOwner = subscription.user.id === authUser.id;
 
-    if (!isAdmin && !isOwner) {
+    if (!isAllowed && !isOwner) {
       throw new ForbiddenException(
         'You can only activate your own subscriptions',
       );
