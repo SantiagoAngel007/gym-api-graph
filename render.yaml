@@ -1,0 +1,24 @@
+services:
+    - type: web
+      name: gym-api-graph
+      env: node
+      plan: free
+      buildCommand: npm install && npm run build
+      startCommand: npm run start:prod
+      envVars:
+        - key: NODE_ENV
+          value: production
+        - key: DB_HOST
+          sync: false
+        - key: DB_PORT
+          value: 5432
+        - key: DB_NAME
+          sync: false
+        - key: DB_USERNAME
+          sync: false
+        - key: DB_PASSWORD
+          sync: false
+        - key: JWT_SECRET
+          sync: false
+        - key: PORT
+          value: 9092
