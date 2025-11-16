@@ -19,7 +19,12 @@ import { JwtService } from '@nestjs/jwt';
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      // En producción (Vercel), usar true para generar en memoria
+      // En desarrollo, guardar en archivo
+      autoSchemaFile:
+        process.env.NODE_ENV === 'production'
+          ? true
+          : join(process.cwd(), 'src/schema.gql'),
       playground: true,
       context: ({ req, res }) => {
         return { req, res };
