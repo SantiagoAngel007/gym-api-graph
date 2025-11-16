@@ -3,8 +3,8 @@ services:
       name: gym-api-graph
       env: node
       plan: free
-      buildCommand: npm install --production=false && npm run build
-      startCommand: npm run start:prod
+      buildCommand: npm ci && npx nest build
+      startCommand: node dist/main.js
       envVars:
         - key: NODE_ENV
           value: production
