@@ -6,6 +6,7 @@ import {
   Entity,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
 
@@ -47,6 +48,9 @@ export class Membership {
   @UpdateDateColumn()
   @Field()
   updated_at: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 
   @ManyToMany('Subscription', { eager: false })
   @JoinTable({
