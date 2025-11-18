@@ -1,0 +1,767 @@
+{
+  "info": {
+    "_postman_id": "gym-api-graphql-production",
+    "name": "Gym API GraphQL - Production",
+    "description": "Complete GraphQL API testing collection for Gym Management API - Production (Vercel)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Signup - Create User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.signup) {",
+                  "      const { token, user } = jsonData.data.signup;",
+                  "      pm.environment.set('AUTH_TOKEN', token);",
+                  "      pm.environment.set('USER_ID', user.id);",
+                  "      console.log('✓ TOKEN guardado:', token.substring(0, 20) + '...');",
+                  "      console.log('✓ USER_ID guardado:', user.id);",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al guardar variables:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation signup($createUserInput: CreateUserInput!) {\n  signup(createUserInput: $createUserInput) {\n    token\n    user {\n      id\n      email\n      fullName\n      age\n      isActive\n    }\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.login) {",
+                  "      const { token, user } = jsonData.data.login;",
+                  "      pm.environment.set('AUTH_TOKEN', token);",
+                  "      pm.environment.set('USER_ID', user.id);",
+                  "      console.log('✓ AUTH_TOKEN guardado:', token.substring(0, 20) + '...');",
+                  "      console.log('✓ USER_ID guardado:', user.id);",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al guardar variables:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation login($loginInput: LoginInput!) {\n  login(loginInput: $loginInput) {\n    token\n    user {\n      id\n      email\n      fullName\n      age\n      isActive\n    }\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Login - Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.login) {",
+                  "      const { token, user } = jsonData.data.login;",
+                  "      pm.environment.set('ADMIN_TOKEN', token);",
+                  "      pm.environment.set('ADMIN_ID', user.id);",
+                  "      console.log('✓ ADMIN_TOKEN guardado:', token.substring(0, 20) + '...');",
+                  "      console.log('✓ ADMIN_ID guardado:', user.id);",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al guardar variables:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation login($loginInput: LoginInput!) {\n  login(loginInput: $loginInput) {\n    token\n    user {\n      id\n      email\n      fullName\n      age\n      isActive\n    }\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Get Current User (Me)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query me {\n  me {\n    id\n    email\n    fullName\n    age\n    isActive\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query user($id: String!) {\n  user(id: $id) {\n    id\n    email\n    fullName\n    age\n    isActive\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query users {\n  users {\n    id\n    email\n    fullName\n    age\n    isActive\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation updateUser($updateUserInput: UpdateUserInput!) {\n  updateUser(updateUserInput: $updateUserInput) {\n    id\n    email\n    fullName\n    age\n    isActive\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Remove User (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation removeUser($id: String!) {\n  removeUser(id: $id) {\n    id\n    email\n    fullName\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Memberships",
+      "item": [
+        {
+          "name": "Get All Memberships",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.memberships && jsonData.data.memberships.length > 0) {",
+                  "      const firstMembership = jsonData.data.memberships[0];",
+                  "      pm.environment.set('MEMBERSHIP_ID', firstMembership.id);",
+                  "      console.log('✓ MEMBERSHIP_ID guardado:', firstMembership.id);",
+                  "      console.log('  Membresía: ' + firstMembership.name);",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al guardar MEMBERSHIP_ID:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query memberships {\n  memberships {\n    id\n    name\n    cost\n    status\n    max_classes_assistance\n    max_gym_assistance\n    duration_months\n    created_at\n    updated_at\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Get Membership by ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query membership($id: String!) {\n  membership(id: $id) {\n    id\n    name\n    cost\n    status\n    max_classes_assistance\n    max_gym_assistance\n    duration_months\n    created_at\n    updated_at\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Create Membership (Admin Only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.createMembership) {",
+                  "      const newMembership = jsonData.data.createMembership;",
+                  "      pm.environment.set('MEMBERSHIP_ID', newMembership.id);",
+                  "      console.log('✓ Nueva MEMBERSHIP_ID guardada:', newMembership.id);",
+                  "      console.log('  Membresía creada: ' + newMembership.name);",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al guardar nueva MEMBERSHIP_ID:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation createMembership($createMembershipInput: CreateMembershipInput!) {\n  createMembership(createMembershipInput: $createMembershipInput) {\n    id\n    name\n    cost\n    status\n    max_classes_assistance\n    max_gym_assistance\n    duration_months\n    created_at\n    updated_at\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Update Membership (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation updateMembership($updateMembershipInput: UpdateMembershipInput!) {\n  updateMembership(updateMembershipInput: $updateMembershipInput) {\n    id\n    name\n    cost\n    status\n    max_classes_assistance\n    max_gym_assistance\n    duration_months\n    created_at\n    updated_at\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Toggle Membership Status (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation toggleMembershipStatus($id: String!) {\n  toggleMembershipStatus(id: $id) {\n    id\n    name\n    cost\n    status\n    max_classes_assistance\n    max_gym_assistance\n    duration_months\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Remove Membership (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation removeMembership($id: String!) {\n  removeMembership(id: $id)\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Subscriptions",
+      "item": [
+        {
+          "name": "Get All Subscriptions (Admin & Receptionist)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.subscriptions && jsonData.data.subscriptions.length > 0) {",
+                  "      const firstSubscription = jsonData.data.subscriptions[0];",
+                  "      pm.environment.set('SUBSCRIPTION_ID', firstSubscription.id);",
+                  "      console.log('✓ SUBSCRIPTION_ID guardado:', firstSubscription.id);",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al guardar SUBSCRIPTION_ID:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query subscriptions {\n  subscriptions {\n    id\n    name\n    cost\n    max_classes_assistance\n    max_gym_assistance\n    duration_months\n    purchase_date\n    isActive\n    created_at\n    updated_at\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Get Subscription by User ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.subscriptionByUserId) {",
+                  "      const subscription = jsonData.data.subscriptionByUserId;",
+                  "      pm.environment.set('SUBSCRIPTION_ID', subscription.id);",
+                  "      console.log('✓ SUBSCRIPTION_ID guardado:', subscription.id);",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al guardar SUBSCRIPTION_ID:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query subscriptionByUserId($userId: String!) {\n  subscriptionByUserId(userId: $userId) {\n    id\n    name\n    cost\n    max_classes_assistance\n    max_gym_assistance\n    duration_months\n    purchase_date\n    isActive\n    created_at\n    updated_at\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Get Subscription by ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query subscription($id: String!) {\n  subscription(id: $id) {\n    id\n    name\n    cost\n    max_classes_assistance\n    max_gym_assistance\n    duration_months\n    purchase_date\n    isActive\n    created_at\n    updated_at\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Create Subscription for User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.createSubscriptionForUser) {",
+                  "      const newSubscription = jsonData.data.createSubscriptionForUser;",
+                  "      pm.environment.set('SUBSCRIPTION_ID', newSubscription.id);",
+                  "      console.log('✓ Nueva SUBSCRIPTION_ID guardada:', newSubscription.id);",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al guardar SUBSCRIPTION_ID:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation createSubscriptionForUser($userId: String!) {\n  createSubscriptionForUser(userId: $userId) {\n    id\n    name\n    cost\n    max_classes_assistance\n    max_gym_assistance\n    duration_months\n    purchase_date\n    isActive\n    created_at\n    updated_at\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Update Subscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation updateSubscription($updateSubscriptionInput: UpdateSubscriptionInput!) {\n  updateSubscription(updateSubscriptionInput: $updateSubscriptionInput) {\n    id\n    name\n    cost\n    max_classes_assistance\n    max_gym_assistance\n    duration_months\n    purchase_date\n    isActive\n    created_at\n    updated_at\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Deactivate Subscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation deactivateSubscription($id: String!) {\n  deactivateSubscription(id: $id) {\n    id\n    isActive\n    name\n    cost\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Activate Subscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation activateSubscription($id: String!) {\n  activateSubscription(id: $id) {\n    id\n    isActive\n    name\n    cost\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Remove Subscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation removeSubscription($id: String!) {\n  removeSubscription(id: $id)\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Add Membership to Subscription",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.addMembershipToSubscription) {",
+                  "      const subscription = jsonData.data.addMembershipToSubscription;",
+                  "      pm.environment.set('SUBSCRIPTION_ID', subscription.id);",
+                  "      console.log('✓ Membresía agregada a la suscripción');",
+                  "      console.log('✓ SUBSCRIPTION_ID guardado:', subscription.id);",
+                  "      console.log('  Pases disponibles - Gym:', subscription.max_gym_assistance);",
+                  "      console.log('  Pases disponibles - Clases:', subscription.max_classes_assistance);",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al agregar membresía:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation addMembershipToSubscription($addMembershipInput: AddMembershipInput!) {\n  addMembershipToSubscription(addMembershipInput: $addMembershipInput) {\n    id\n    name\n    cost\n    max_classes_assistance\n    max_gym_assistance\n    duration_months\n    isActive\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attendances",
+      "item": [
+        {
+          "name": "Get Attendance Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query attendanceStatus($userId: String!) {\n  attendanceStatus(userId: $userId) {\n    isInside\n    availableAttendances {\n      gym\n      classes\n    }\n    currentAttendance {\n      id\n      type\n      entranceDatetime\n    }\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Check In - Gym",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.checkIn) {",
+                  "      const attendance = jsonData.data.checkIn;",
+                  "      pm.environment.set('ATTENDANCE_ID', attendance.id);",
+                  "      console.log('✓ ATTENDANCE_ID guardado:', attendance.id);",
+                  "      console.log('  Tipo: Gym entrada');",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al guardar ATTENDANCE_ID:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation checkIn($createAttendanceInput: CreateAttendanceInput!) {\n  checkIn(createAttendanceInput: $createAttendanceInput) {\n    id\n    type\n    entranceDatetime\n    exitDatetime\n    isActive\n    dateKey\n    created_at\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Check In - Class",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.checkIn) {",
+                  "      const attendance = jsonData.data.checkIn;",
+                  "      pm.environment.set('ATTENDANCE_ID', attendance.id);",
+                  "      console.log('✓ ATTENDANCE_ID guardado:', attendance.id);",
+                  "      console.log('  Tipo: Class entrada');",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Error al guardar ATTENDANCE_ID:', e);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation checkIn($createAttendanceInput: CreateAttendanceInput!) {\n  checkIn(createAttendanceInput: $createAttendanceInput) {\n    id\n    type\n    entranceDatetime\n    exitDatetime\n    isActive\n    dateKey\n    created_at\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        },
+        {
+          "name": "Check Out",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}"}
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation checkOut($userId: String!) {\n  checkOut(userId: $userId) {\n    id\n    type\n    entranceDatetime\n    exitDatetime\n    isActive\n    dateKey\n    updated_at\n  }\n}"
+              }
+            },
+            "url": {"raw": "{{BASE_URL}}/graphql", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["graphql"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Seed - Populate Database",
+      "item": [
+        {
+          "name": "Execute Seed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "url": {"raw": "{{BASE_URL}}/seed", "protocol": "https", "host": ["{{BASE_URL_HOST}}"], "path": ["seed"]}
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {"key": "BASE_URL_HOST", "value": "gym-api-graphv2.vercel.app", "type": "string"},
+    {"key": "BASE_URL", "value": "https://gym-api-graphv2.vercel.app", "type": "string"},
+    {"key": "AUTH_TOKEN", "value": "", "type": "string"},
+    {"key": "ADMIN_TOKEN", "value": "", "type": "string"},
+    {"key": "USER_ID", "value": "", "type": "string"},
+    {"key": "ADMIN_ID", "value": "", "type": "string"},
+    {"key": "MEMBERSHIP_ID", "value": "", "type": "string"},
+    {"key": "SUBSCRIPTION_ID", "value": "", "type": "string"},
+    {"key": "ATTENDANCE_ID", "value": "", "type": "string"}
+  ]
+}
